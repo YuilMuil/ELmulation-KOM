@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Common">
+      <UniqueIdentifier>{ed1f31f4-689d-4e5e-88eb-d2a449ffcf52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Common\Cryptography">
+      <UniqueIdentifier>{b16c1c4e-b6ab-4478-892c-5cd89935c358}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Common">
+      <UniqueIdentifier>{7fc4abd9-4bc9-48d7-93ab-ea7fa17e6054}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Common\Cryptography">
+      <UniqueIdentifier>{58768f74-b079-4ead-be67-1109783157f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\KOMExtractor">
+      <UniqueIdentifier>{4e87a148-cfed-4a7d-aa3c-9768384affff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\KOMCreator">
+      <UniqueIdentifier>{fe321a7f-c697-4d73-93c2-c51d69cfce1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\KOMExtractor">
+      <UniqueIdentifier>{02e2e6a9-e428-4787-a281-9e6307a3565a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\KOMCreator">
+      <UniqueIdentifier>{eb39a0da-8408-4b39-b0c8-00c96336e852}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KOMExtractor\KOMExtractor.h">
+      <Filter>Header Files\KOMExtractor</Filter>
+    </ClInclude>
+    <ClInclude Include="KOMCreator\KOMCreator.h">
+      <Filter>Header Files\KOMCreator</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Cryptography\DecryptFunctions.h">
+      <Filter>Header Files\Common\Cryptography</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Cryptography\Keys.h">
+      <Filter>Header Files\Common\Cryptography</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\FileProcessing.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\KOM.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Cryptography\CRC_32.h">
+      <Filter>Header Files\Common\Cryptography</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="KOMExtractor\KOMExtractor.cpp">
+      <Filter>Source Files\KOMExtractor</Filter>
+    </ClCompile>
+    <ClCompile Include="KOMCreator\KOMCreator.cpp">
+      <Filter>Source Files\KOMCreator</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\FileProcessing.cpp">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Cryptography\CRC_32.cpp">
+      <Filter>Source Files\Common\Cryptography</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
