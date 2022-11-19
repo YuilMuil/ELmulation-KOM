@@ -62,17 +62,10 @@ std::string KOMCreator::compress_string(const std::string& str, int compressionl
     return outstring;
 }
 
-//std::size_t number_of_files_in_directory(std::filesystem::path path)
-//{
-//    return (std::size_t)std::distance(std::filesystem::directory_iterator{ path }, std::filesystem::directory_iterator{});
-//}
-
 bool KOMCreator::LuaCompile(std::string& FullFilePath)
 {
     if (!std::filesystem::exists("./luac.exe"))
         return false;
-
-    //std::vector <std::future<void>> workers;
 
     /*
     Some credits to Raitou since I saved some time writing the multi-thread part of this
@@ -139,100 +132,6 @@ bool KOMCreator::LuaCompile(std::string& FullFilePath)
         }
         
     }
-
-        //#pragma omp parallel for num_threads(omp_get_num_threads())
-        //    for (int i = 0; i < number_of_files_in_directory(FullFilePath); i++)
-        //    {  
-        //        std::filesystem::recursive_directory_iterator FileIter(FullFilePath);
-        //
-        //        for (int k = 0; k != i; k++)
-        //            FileIter++;
-        //
-        //        if (FileIter->path().filename().extension() == ".lua" || FileIter->path().filename().extension() == ".LUA")
-        //        {
-        //
-        //            STARTUPINFO si;
-        //            PROCESS_INFORMATION pi;
-        //            ZeroMemory(&si, sizeof(si));
-        //            si.cb = sizeof(si);
-        //            ZeroMemory(&pi, sizeof(pi));
-        //
-        //            const std::wstring something = FileIter->path().generic_wstring();
-        //            std::wstring command = (L"luac -o \"" + something + L"\" \"" + something + L"\"");
-        //
-        //            if (!CreateProcess(
-        //                NULL,   // lpApplicationName
-        //                command.data(), // lpCommandLine
-        //                NULL,   // lpProcessAttributes
-        //                NULL,   // lpThreadAttributes
-        //                FALSE,  // bInheritHandles
-        //                NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW,      // dwCreationFlags
-        //                NULL,   // lpEnvironment
-        //                NULL,   // lpCurrentDirectory
-        //                &si,    // lpStartupInfo
-        //                &pi     // lpProcessInformation
-        //            ))
-        //            {
-        //
-        //            }
-        //
-        //            WaitForSingleObject(pi.hProcess, INFINITE);
-        //            CloseHandle(pi.hProcess);
-        //            CloseHandle(pi.hThread);
-        //
-        //            //const std::string something = fileEntry.path().generic_string();
-        //            //WinExec(("luac -o \"" + something + "\" \"" + something + "\"").c_str(), SW_HIDE);
-        //        }
-        //    }
-
-            //for (auto& fileEntry : std::filesystem::recursive_directory_iterator(FullFilePath))
-            //{
-
-            //        if (fileEntry.path().filename().extension() == ".lua")
-            //        {
-
-            //            STARTUPINFO si;
-            //            PROCESS_INFORMATION pi;
-            //            ZeroMemory(&si, sizeof(si));
-            //            si.cb = sizeof(si);
-            //            ZeroMemory(&pi, sizeof(pi));
-
-            //            const std::wstring something = fileEntry.path().generic_wstring();
-            //            std::wstring command = (L"luac -o \"" + something + L"\" \"" + something + L"\"");
-
-            //            if (!CreateProcess(
-            //                NULL,   // lpApplicationName
-            //                command.data(), // lpCommandLine
-            //                NULL,   // lpProcessAttributes
-            //                NULL,   // lpThreadAttributes
-            //                FALSE,  // bInheritHandles
-            //                NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW,      // dwCreationFlags
-            //                NULL,   // lpEnvironment
-            //                NULL,   // lpCurrentDirectory
-            //                &si,    // lpStartupInfo
-            //                &pi     // lpProcessInformation
-            //            ))
-            //            {
-            //                
-            //            }
-
-            //            WaitForSingleObject(pi.hProcess, INFINITE);
-            //            CloseHandle(pi.hProcess);
-            //            CloseHandle(pi.hThread);
-
-            //            //const std::string something = fileEntry.path().generic_string();
-            //            //WinExec(("luac -o \"" + something + "\" \"" + something + "\"").c_str(), SW_HIDE);
-            //        }
-            //            
-            //        //workers.emplace_back(std::async([&something]()
-            //        //    {
-            //                //WinExec(("luac -o \"" + something + "\" \"" + something + "\"").c_str(), SW_HIDE);
-            //            //}));
-            //}
-
-            //for (auto& worker : workers)
-            //    worker.get();
-
         return true;
 }
 
@@ -271,7 +170,7 @@ bool KOMCreator::WriteHeader(std::ofstream& FileBuffer, KOMv3Header& KOMHeaderBu
         FileBuffer.write(KOMv3::MAGIC_HEADER.data(), KOMv3::MAGIC_HEADER.size()); // Write magic header
 
         for (int i = 0; i < 25; i++)
-            FileBuffer.write("\0", 1); // write 33 bytes of padding
+            FileBuffer.write("\0", 1); // write 25 bytes of padding
 
         FileBuffer.write((char*)&KOMHeaderBuffer.FileEntryCount, 4); //write file count size
         FileBuffer.write("\1\0\0\0", 4); // Is it compressed or not? Just write as always true, since there are basically no times when its not true in els..
@@ -319,9 +218,6 @@ bool KOMCreator::CreateXML(std::vector<KOMv3>& FileVec, std::ofstream& FileBuffe
     if (!WriteHeader(FileBuffer, KOMHeaderBuffer)) // Write KOM entry header + XML
         return false;
 
-    //FileBuffer.write(&KOMHeaderBuffer.XML.rdbuf(), )
-    //doc.save(FileBuffer); // Save XML buffer to kom filebuffer
-
     return true;
 }
 
@@ -366,15 +262,6 @@ void KOMCreator::WriteBinaryToKOM(std::vector<KOMv3>& FileVec, std::ofstream& Fi
 
     return;                                                                      // Returns after it is finished. no point in having it but w/e
 }
-
-//std::string IntToByte(uint32_t Value)
-//{
-//
-//    std::string copy;
-//    
-//    copy.append(&Value[0]);
-//    
-//}
 
 //Generate a vector of file lists, then move onto generating the XML header with pugixml
 //*** use static std::string GetCRCFromFile(const char* szFilePath); -> do this for each loop cycle

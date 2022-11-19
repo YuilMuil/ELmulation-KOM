@@ -1,6 +1,5 @@
 #pragma once
 #include "../Common/KOM.h" // KOM structure + includes needed for File I/O
-#include "pugixml.hpp"     // XML parser
 #include "../Common/Cryptography/CRC_32.h"
 #include <thread>		   // For multi-threading luac
 

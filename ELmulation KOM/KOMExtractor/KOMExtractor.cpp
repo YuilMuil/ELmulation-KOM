@@ -1,5 +1,6 @@
 #include "KOMExtractor.h"
-#include <codecvt>
+#include <future>
+
 /*
 Things that can be done.
 Changing substr to boost::string_ref, but I didn't feel like adding Boost
@@ -21,7 +22,6 @@ as a mark to show how many times I rewrote utility class(hint: its about 3 times
 Unfortunately VS doesn't support OpenMP 5.0, where range based for loops(or for_each)
 can be parallel'd by #pragma magic, so please do understand..
 */
-
 
 // Credits to Timo Bingmann(https://panthema.net/2007/0328-ZLibString.html) for this code.
 // I made my own implementation at first but this was much easier to read so I changed it -w-
@@ -82,7 +82,7 @@ void KOMExtractor::LuaDecompile(std::string& FullFilePath)
 		}
 	}
 
-	std::jthread* t = new std::jthread[omp_get_num_threads()];
+	std::future<void>* t = new std::future<void>[omp_get_num_threads()];
 	int fileIter = 0;
 	//continue doing this over and over again until all files are done
 	while (!(fileIter >= fileNames.size()))
@@ -92,7 +92,7 @@ void KOMExtractor::LuaDecompile(std::string& FullFilePath)
 		//creating new threads from the said number of threads u want it to be
 		for (int i = 0; i < omp_get_num_threads(); i++)
 		{
-			t[i] = std::jthread([](std::wstring _FilePath)
+			t[i] = std::async(std::launch::async, [](std::wstring _FilePath)
 				{
 
 					STARTUPINFO si;
@@ -106,28 +106,28 @@ void KOMExtractor::LuaDecompile(std::string& FullFilePath)
 					sa.lpSecurityDescriptor = NULL;
 					sa.bInheritHandle = TRUE;
 
-					//std::wstring FILESOMETHING = _FilePath + L"out";
+					std::wstring FILESOMETHING = _FilePath + L"out";
 
-					//HANDLE h = CreateFile(FILESOMETHING.data(),
-					//	FILE_WRITE_DATA,
-					//	FILE_SHARE_WRITE | FILE_SHARE_READ,
-					//	&sa,
-					//	CREATE_ALWAYS,
-					//	FILE_ATTRIBUTE_NORMAL,
-					//	NULL);
+					HANDLE h = CreateFile(FILESOMETHING.data(),
+						GENERIC_WRITE,
+						0,
+						&sa,
+						CREATE_NEW,
+						FILE_ATTRIBUTE_NORMAL,
+						NULL);
 
-					//si.hStdOutput = h;
-					//si.dwFlags |= STARTF_USESTDHANDLES;
+					si.hStdOutput = h;
+					si.dwFlags |= STARTF_USESTDHANDLES;
 
-					//std::wstring command = (L"java -jar unluac.jar \"" + _FilePath + L"\" > \"" + _FilePath + L"out" + L"\"");
-					//std::wstring command = (L"java -jar unluac.jar \"" + _FilePath + L"\"");
-					std::wstring command = (L"java -jar unluac.jar -o \"" + _FilePath + L"\" \"" + _FilePath + L"\"");
+					//std::wstring command = (L"java -jar unluac.jar \"" + _FilePath + L"\" >> \"" + _FilePath + L"out" + L"\"");
+					std::wstring command = (L"java -Xmx2048m -jar unluac.jar \"" + _FilePath + L"\"");
+					//std::wstring command = (L"java -jar -Xmx2048m unluac.jar -o \"" + _FilePath + L"\" \"" + _FilePath + L"\"");
 					if (!CreateProcess(
 						NULL,   // lpApplicationName
 						command.data(), // lpCommandLine
 						NULL,   // lpProcessAttributes
 						NULL,   // lpThreadAttributes
-						FALSE,  // bInheritHandles
+						TRUE,  // bInheritHandles
 						NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW,      // dwCreationFlags
 						NULL,   // lpEnvironment
 						NULL,   // lpCurrentDirectory
@@ -139,8 +139,12 @@ void KOMExtractor::LuaDecompile(std::string& FullFilePath)
 					}
 
 					WaitForSingleObject(pi.hProcess, INFINITE);
+					CloseHandle(si.hStdOutput);
+					CloseHandle(si.hStdInput);
 					CloseHandle(pi.hProcess);
 					CloseHandle(pi.hThread);
+
+					DeleteFile(_FilePath.data());
 
 				}, fileNames.at(fileIter));
 			threadUsedCnt++;
@@ -150,28 +154,10 @@ void KOMExtractor::LuaDecompile(std::string& FullFilePath)
 			if (fileIter >= fileNames.size())
 				break;
 		}
+
 	}
 
-//}
 
-//std::vector <std::future<void>> workers;
-
-//for (auto& fileEntry : std::filesystem::recursive_directory_iterator(FullFilePath))
-//{
-
-//	if (fileEntry.path().filename().extension() == ".lua")
-//	{
-//		const std::string something = fileEntry.path().generic_string();
-//		WinExec(("java -jar unluac.jar -o \"" + something + "\" \"" + something + "\"").c_str(), SW_HIDE);
-//	}
-
-	//workers.emplace_back(std::async([&something]()
-	//    {
-			//WinExec(("luac -o \"" + something + "\" \"" + something + "\"").c_str(), SW_HIDE);
-		//}));
-
-//for (auto& worker : workers)
-//    worker.get();
 	return;
 }
 
@@ -203,18 +189,28 @@ void KOMExtractor::ProcessKOM(std::string FullFileDir, std::string FileDir, std:
 			ExportFile(DecompDirectory, ObjectList[iter]);	// Export the file to the folder
 	}
 		
-	LuaDecompile(DecompDirectory);
+	//For now disable the lua decompilation
+	//LuaDecompile(DecompDirectory);
+
+	//for (auto& file : std::filesystem::directory_iterator(DecompDirectory))
+	//{
+	//	std::filesystem::path p = file;
+	//	if (file.path().extension() == ".luaout")
+	//	{
+	//		p.replace_extension(L"lua");
+	//	}
+	//}
 
 }
 
 bool KOMExtractor::ProcessXML(std::ifstream& FileBuffer, std::vector<KOMv3>& RefObj)
 { 
-	std::string test{};
-	test.resize(4);
+	std::string TempXMLSizeBuffer{};
+	TempXMLSizeBuffer.resize(4);
 
-	FileBuffer.read(test.data(), 4); // Get XML Size from FileBuffer(last 4 bytes before XML header) and then delete it
+	FileBuffer.read(TempXMLSizeBuffer.data(), 4); // Get XML Size from FileBuffer(last 4 bytes before XML header) and then delete it
 
-	uint32_t XMLSize{ BufferToInt(test) }; // Set XML size
+	uint32_t XMLSize{ BufferToInt(TempXMLSizeBuffer) }; // Set XML size
 
 	std::string XMLData{};
 	XMLData.resize(XMLSize);
@@ -269,21 +265,21 @@ bool KOMExtractor::ProcessBuffer(KOMv3& FileObj)
 	//This is indeed thread-safe. - Yuilmuil
 	std::string FileExt{ FileObj.Filename.substr(FileObj.Filename.size() - 3, FileObj.Filename.size()) };
 	std::wstring tempbuffer;
+	std::string tempbuffer2;
 	switch(FileObj.Algorithm)
 	{
 		case Algorithm::Algorithm_0:
 			FileObj.FileBuffer = ZlibDecompress(FileObj.FileBuffer);
-			if (FileExt == "txt" || FileExt == "lua")
+			if (FileExt == "txt" || FileExt == "lua" || FileExt == "Lua" || FileExt == "LUA")
 				FileObj.FileBuffer = XorAlgo0(FileObj.FileBuffer.data(), FileObj.FileBuffer.size()); //decrypt function call
 			break;
 		case Algorithm::Algorithm_2:
 			tempbuffer.assign(FileObj.Filename.begin(), FileObj.Filename.end());
-			FileObj.FileBuffer = XorAlgo2(FileObj.FileBuffer.data(), FileObj.FileBuffer.size(), tempbuffer.data());
+			XorAlgo2(FileObj.FileBuffer.data(), FileObj.FileBuffer.data(), FileObj.CompressedSize, tempbuffer.data());
 			FileObj.FileBuffer = ZlibDecompress(FileObj.FileBuffer);
 			break;
 		case Algorithm::Algorithm_3:
-			tempbuffer.assign(FileObj.Filename.begin(), FileObj.Filename.end());
-			FileObj.FileBuffer = XorAlgo3(FileObj.FileBuffer.data(), FileObj.FileBuffer.size(), tempbuffer.data());
+			//FileObj.FileBuffer = reinterpret_cast<char*>(decrypt_algorithm(FileObj.Filename, (unsigned char*)(FileObj.FileBuffer.data()), FileObj.CompressedSize));
 			FileObj.FileBuffer = ZlibDecompress(FileObj.FileBuffer);
 			break;
 

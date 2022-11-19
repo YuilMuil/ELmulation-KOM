@@ -77,10 +77,10 @@ __forceinline std::string XorAlgo3(const char* pEncryptedBuffer, int iBufferSize
 	return pEncryptedBuffer;
 }
 
-__forceinline std::string XorAlgo2(const char* pEncryptedBuffer, int iBufferSize, const wchar_t* pwszFilename)
+__forceinline void  XorAlgo2(char* pDecryptedBuffer, const char* pEncryptedBuffer, int iBufferSize, const wchar_t* pwszFilename)
 {
-	if (pEncryptedBuffer == NULL || iBufferSize <= 0 || pwszFilename == NULL || pwszFilename[0] == NULL)
-		return std::string();
+	if (pDecryptedBuffer == NULL || pEncryptedBuffer == NULL || iBufferSize <= 0 || pwszFilename == NULL || pwszFilename[0] == NULL)
+		return;
 	const static int	s_aiXorKeys[5] = { XOR_KEY30, XOR_KEY42, XOR_KEY14, XOR_KEY22, XOR_KEY40 };
 	const int iKeySize = 5 * sizeof(int);
 	unsigned char    abyXORKey1[iKeySize];
@@ -126,11 +126,9 @@ __forceinline std::string XorAlgo2(const char* pEncryptedBuffer, int iBufferSize
 		memcpy(&abyXORKey[0], abyXORKey1 + iByteIndex, iKeySize - iByteIndex);
 		memcpy(&abyXORKey[iKeySize - iByteIndex], abyXORKey1, iByteIndex);
 	}
-
-	
-	CRC_32::GetInstance().CalculateAndDecrypt((BYTE*)pEncryptedBuffer, (UINT)iBufferSize, abyXORKey, iKeySize, dwCRC);
-
-	return pEncryptedBuffer;
+	if (pDecryptedBuffer != pEncryptedBuffer)
+		memcpy(pDecryptedBuffer, pEncryptedBuffer, iBufferSize);
+	CRC_32::GetInstance().CalculateAndDecrypt((BYTE*)pDecryptedBuffer, (UINT)iBufferSize, abyXORKey, iKeySize, dwCRC);
 }
 
 __forceinline std::string XorAlgo0(const char* pEncryptedBuffer, int iBufferSize)

@@ -39,3 +39,11 @@
 *.iobj
 *.idb
 *.ipdb
+*.vsidx
+*.lock
+*.db
+.vs/ELmulation KOM/v17/.suo
+*.ipch
+*.bin
+*.manifest
+*.testlog
