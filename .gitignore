@@ -47,3 +47,16 @@
 *.bin
 *.manifest
 *.testlog
+*.json
+*.sqlite
+*.json
+*.in
+lib/zlibcomplete-1.0.5/COPYING
+lib/zlibcomplete-1.0.5/CONTRIBUTORS
+lib/zlibcomplete-1.0.5/ChangeLog
+*.yml
+lib/zlibcomplete-1.0.5/AUTHORS
+*.sqlite
+lib/zlibcomplete-1.0.5/test/runrubytests
+lib/zlibcomplete-1.0.5/test/runtests
+*.html
