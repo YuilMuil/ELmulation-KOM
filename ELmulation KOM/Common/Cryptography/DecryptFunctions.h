@@ -185,7 +185,7 @@ __forceinline std::string XorAlgo0(const char* pEncryptedBuffer, int iBufferSize
 	return strCryptBuffer;
 }
 
-__forceinline char* __xor(const char*_input, int iBufferSize)
+__forceinline std::string __xor(const char*_input, int iBufferSize)
 {
 	char _key[12] = { 0x02, 0xAA, 0xF8, 0xC6, 0xDC, 0xAB, 0x47, 0x26, 0xEF, 0xBB, 0x00, 0x98 };
 	std::string _output;
@@ -194,8 +194,5 @@ __forceinline char* __xor(const char*_input, int iBufferSize)
 	for (auto i = 0; i < iBufferSize; i++)
 		_output[i] = _input[i] ^ _key[i % 12];
 
-	char* pDecryptedBuffer = new char[_output.size() + 1];
-	memset(pDecryptedBuffer, 0, _output.size() + 1);
-	memcpy(pDecryptedBuffer, _output.c_str(), _output.size());
-	return pDecryptedBuffer;
+	return _output;
 }

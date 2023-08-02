@@ -137,8 +137,8 @@ bool KOMCreator::LuaCompile(std::string& FullFilePath)
 
 void KOMCreator::ProcessDirectory(std::string FullFilePath, std::string FilePath, std::string Filename)
 {
-    if (!LuaCompile(FullFilePath)) // Check if lua is compiled
-        return;      // If failed then return
+    //if (!LuaCompile(FullFilePath)) // Check if lua is compiled
+    //    return;      // If failed then return
 
     std::ofstream FileBuffer{FullFilePath+".kom", std::ios::binary};
 
@@ -240,7 +240,7 @@ bool KOMCreator::ParseKOMObj(std::vector<KOMv3>& FileVec, std::string& FullFileP
         //Do Compression and encryption here. and then save current file buffer(after compression/encryption) size as compressedsize
         //ENCRYPTION IS ONLY DONE FOR TXT AND LUA in ALGO0
         if (fileEntry.path().extension() == ".lua" || fileEntry.path().extension() == ".Lua" || fileEntry.path().extension() == ".LUA" || fileEntry.path().extension() == ".txt")
-            FileObject.FileBuffer = XorAlgo0(FileObject.FileBuffer.data(), FileObject.FileBuffer.size());
+            FileObject.FileBuffer = __xor(FileObject.FileBuffer.data(), FileObject.FileBuffer.size());
 
         FileObject.FileBuffer = KOMCreator::compress_string(FileObject.FileBuffer, Z_DEFAULT_COMPRESSION); // Compress the string
 

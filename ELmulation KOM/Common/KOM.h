@@ -11,6 +11,7 @@
 enum Algorithm
 {
 	//Komv3 algorithms
+	Algorithm_2009 = -1,
 	Algorithm_0 = 0,
 	Algorithm_2 = 2,
 	Algorithm_3 = 3,

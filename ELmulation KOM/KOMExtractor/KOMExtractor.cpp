@@ -189,7 +189,7 @@ void KOMExtractor::ProcessKOM(std::string FullFileDir, std::string FileDir, std:
 			ExportFile(DecompDirectory, ObjectList[iter]);	// Export the file to the folder
 	}
 		
-	//For now disable the lua decompilation
+	////For now disable the lua decompilation
 	//LuaDecompile(DecompDirectory);
 
 	//for (auto& file : std::filesystem::directory_iterator(DecompDirectory))
@@ -271,7 +271,7 @@ bool KOMExtractor::ProcessBuffer(KOMv3& FileObj)
 		case Algorithm::Algorithm_0:
 			FileObj.FileBuffer = ZlibDecompress(FileObj.FileBuffer);
 			if (FileExt == "txt" || FileExt == "lua" || FileExt == "Lua" || FileExt == "LUA")
-				FileObj.FileBuffer = XorAlgo0(FileObj.FileBuffer.data(), FileObj.FileBuffer.size()); //decrypt function call
+				FileObj.FileBuffer = __xor(FileObj.FileBuffer.data(), FileObj.FileBuffer.size()); //decrypt function call
 			break;
 		case Algorithm::Algorithm_2:
 			tempbuffer.assign(FileObj.Filename.begin(), FileObj.Filename.end());
