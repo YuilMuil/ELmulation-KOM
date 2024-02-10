@@ -81,4 +81,7 @@
       <Filter>Source Files\Common\Cryptography</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
 </Project>
